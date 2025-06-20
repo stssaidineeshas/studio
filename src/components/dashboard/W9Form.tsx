@@ -1,6 +1,7 @@
 
 "use client";
 
+import Link from 'next/link'; // Moved to top
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -200,24 +201,14 @@ export default function W9Form({ isOpen, onClose, onSave }: W9FormProps) {
           </Button>
           <Button type="submit" onClick={() => {
             // Simulate form submission for now. In a real app, you'd handle form data.
-            onSave();
+            // To properly submit the form, this button should be inside the <form>
+            // or use the form attribute: <Button type="submit" form="w9FormId">
+            handleSubmit(new Event('submit', {cancelable: true}) as any); // Or call onSave directly if validation isn't form-dependent
           }}>Save</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
   );
 }
-
-// Helper component for cleaner JSX (Optional)
-const FormField: React.FC<{ label: string; id: string; children: React.ReactNode; className?: string }> = ({ label, id, children, className }) => (
-  <div className={cn("space-y-1", className)}>
-    <Label htmlFor={id}>{label}</Label>
-    {children}
-  </div>
-);
-
-// Need to add Link import if not already there
-import Link from 'next/link';
-import { cn } from "@/lib/utils";
 
     
