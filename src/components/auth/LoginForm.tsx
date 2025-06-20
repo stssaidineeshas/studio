@@ -44,10 +44,11 @@ export default function LoginForm() {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (values.email === "martinmiller@gmail.com" && values.password === "password") { 
-      toast({
-        title: "Login Successful",
-        description: "Redirecting to dashboard...",
-      });
+      // Successful login toast is not standard, redirecting directly
+      // toast({
+      //   title: "Login Successful",
+      //   description: "Redirecting to dashboard...",
+      // });
       router.push("/dashboard");
     } else {
       toast({
@@ -62,9 +63,9 @@ export default function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md shadow-xl rounded-lg">
+    <Card className="w-full max-w-md shadow-xl rounded-lg bg-card">
       <CardHeader className="text-left pt-8 pb-6 px-8">
-        <CardTitle className="text-2xl font-semibold font-body">Sign in to your account</CardTitle>
+        <CardTitle className="text-2xl font-semibold font-body text-card-foreground">Sign in to your account</CardTitle>
       </CardHeader>
       <CardContent className="px-8 pb-8">
         <Form {...form}>
@@ -74,7 +75,7 @@ export default function LoginForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-normal text-gray-600">Email Id</FormLabel>
+                  <FormLabel>Email Id</FormLabel>
                   <FormControl>
                     <Input 
                       type="email" 
@@ -93,7 +94,7 @@ export default function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-normal text-gray-600">Password</FormLabel>
+                  <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input 
                       type="password" 
