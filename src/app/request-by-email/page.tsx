@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect, type ChangeEvent } from 'react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,6 +28,7 @@ import {
 import LogoIcon from "@/components/icons/LogoIcon";
 import { Bell, Search, PlusCircle, Eye, SendHorizonal, Circle } from "lucide-react";
 import AddVendorSheet from '@/components/request-by-email/AddVendorSheet';
+import ViewVendorSheet from '@/components/request-by-email/ViewVendorSheet'; // New import
 
 interface Vendor {
   id: string;
@@ -42,7 +43,7 @@ interface Vendor {
   tinStatus: 'In Progress' | 'Success' | 'Order Created';
 }
 
-const vendorsData: Vendor[] = [
+const initialVendorsData: Vendor[] = [
   { id: '1', name: 'Tristian Stubbs', vendorId: '#73489', email: 'tristianstubbs@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Completed', tinStatus: 'In Progress' },
   { id: '2', name: 'Steve Martin', vendorId: '#84659', email: 'steve@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Completed', tinStatus: 'Success' },
   { id: '3', name: 'Martin Shane', vendorId: '#73489', email: 'martinshane@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Completed', tinStatus: 'In Progress' },
@@ -57,7 +58,7 @@ const getStatusIndicator = (status: Vendor["w9Status"] | Vendor["tinStatus"]) =>
       colorClass = "text-green-500";
       break;
     case "In Progress":
-      colorClass = "text-yellow-500"; // Changed to yellow for "In Progress" for better visual distinction
+      colorClass = "text-yellow-500"; 
       break;
     case "Requested W-9":
     case "Order Created":
@@ -72,18 +73,59 @@ const getStatusIndicator = (status: Vendor["w9Status"] | Vendor["tinStatus"]) =>
 
 export default function RequestByEmailPage() {
   const router = useRouter();
-  const userName = "Martin"; // Hardcoded for example
+  const userName = "Martin"; 
   const [isAddVendorSheetOpen, setIsAddVendorSheetOpen] = useState(false);
+  const [vendorsData, setVendorsData] = useState<Vendor[]>(initialVendorsData);
+  const [selectedVendorIds, setSelectedVendorIds] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [isViewVendorSheetOpen, setIsViewVendorSheetOpen] = useState(false);
+  const [currentVendorDetails, setCurrentVendorDetails] = useState<Vendor | null>(null);
 
   const handleLogout = () => {
     router.push('/login');
   };
 
-  const handleSaveVendor = () => {
-    // Logic to save vendor data would go here
-    console.log("Vendor saved!"); // Placeholder
+  const handleSaveVendor = (newVendor: Omit<Vendor, 'id' | 'w9Status' | 'tinStatus'>) => {
+    const newVendorEntry: Vendor = {
+      ...newVendor,
+      id: (vendorsData.length + 1).toString(), // Simple ID generation
+      w9Status: 'Requested W-9', // Default status
+      tinStatus: 'Order Created',  // Default status
+    };
+    setVendorsData(prevVendors => [newVendorEntry, ...prevVendors]);
     setIsAddVendorSheetOpen(false);
   };
+
+  const handleSelectAll = (checked: boolean | string) => {
+    if (checked) {
+      setSelectedVendorIds(vendorsData.map(vendor => vendor.id));
+    } else {
+      setSelectedVendorIds([]);
+    }
+  };
+
+  const handleSelectRow = (vendorId: string, checked: boolean | string) => {
+    if (checked) {
+      setSelectedVendorIds(prev => [...prev, vendorId]);
+    } else {
+      setSelectedVendorIds(prev => prev.filter(id => id !== vendorId));
+    }
+  };
+
+  const handleViewVendor = (vendor: Vendor) => {
+    setCurrentVendorDetails(vendor);
+    setIsViewVendorSheetOpen(true);
+  };
+
+  const filteredVendors = vendorsData.filter(vendor =>
+    vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    vendor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    vendor.vendorId.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const isAllSelected = vendorsData.length > 0 && selectedVendorIds.length === vendorsData.length;
+
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -137,7 +179,13 @@ export default function RequestByEmailPage() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative w-full md:w-auto md:flex-grow max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input type="search" placeholder="Search Lead" className="pl-10 w-full" />
+            <Input 
+              type="search" 
+              placeholder="Search by Vendor Name, Email or ID" 
+              className="pl-10 w-full" 
+              value={searchTerm}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+            />
           </div>
           <Button className="w-full md:w-auto" onClick={() => setIsAddVendorSheetOpen(true)}>
             <PlusCircle className="mr-2 h-5 w-5" />
@@ -150,8 +198,14 @@ export default function RequestByEmailPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
-                  <TableHead className="w-[50px]">
-                    <Checkbox id="select-all" />
+                  <TableHead className="w-[50px] px-4">
+                    <Checkbox 
+                      id="select-all"
+                      aria-label="Select all vendors"
+                      checked={isAllSelected}
+                      onCheckedChange={handleSelectAll}
+                      disabled={filteredVendors.length === 0}
+                    />
                   </TableHead>
                   <TableHead>Vendor Name</TableHead>
                   <TableHead>Vendor ID</TableHead>
@@ -166,10 +220,22 @@ export default function RequestByEmailPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {vendorsData.map((vendor) => (
-                  <TableRow key={vendor.id}>
-                    <TableCell>
-                      <Checkbox id={`select-${vendor.id}`} />
+                {filteredVendors.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={11} className="text-center py-10 text-muted-foreground">
+                      No vendors found.
+                    </TableCell>
+                  </TableRow>
+                )}
+                {filteredVendors.map((vendor) => (
+                  <TableRow key={vendor.id} data-state={selectedVendorIds.includes(vendor.id) ? "selected" : ""}>
+                    <TableCell className="px-4">
+                      <Checkbox 
+                        id={`select-${vendor.id}`} 
+                        aria-label={`Select vendor ${vendor.name}`}
+                        checked={selectedVendorIds.includes(vendor.id)}
+                        onCheckedChange={(checked) => handleSelectRow(vendor.id, !!checked)}
+                      />
                     </TableCell>
                     <TableCell className="font-medium">{vendor.name}</TableCell>
                     <TableCell>{vendor.vendorId}</TableCell>
@@ -191,11 +257,11 @@ export default function RequestByEmailPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Button variant="ghost" size="icon" className="mr-1">
+                      <Button variant="ghost" size="icon" className="mr-1" onClick={() => handleViewVendor(vendor)}>
                         <Eye className="h-5 w-5 text-primary" />
                       </Button>
-                       <Button variant="ghost" size="icon">
-                        <SendHorizonal className="h-5 w-5 text-primary" />
+                       <Button variant="ghost" size="icon" disabled>
+                        <SendHorizonal className="h-5 w-5 text-primary/50" />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -215,6 +281,16 @@ export default function RequestByEmailPage() {
         onClose={() => setIsAddVendorSheetOpen(false)}
         onSave={handleSaveVendor}
       />
+      {currentVendorDetails && (
+        <ViewVendorSheet
+          isOpen={isViewVendorSheetOpen}
+          onClose={() => {
+            setIsViewVendorSheetOpen(false);
+            setCurrentVendorDetails(null);
+          }}
+          vendor={currentVendorDetails}
+        />
+      )}
     </div>
   );
 }
