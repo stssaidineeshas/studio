@@ -4,7 +4,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -32,7 +31,9 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LogoIcon from '@/components/icons/LogoIcon';
-import { LayoutDashboard, BarChart3, Settings, ListChecks, LibraryBig, CircleSlash, ChevronRight, RefreshCcw } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Settings, ListChecks, LibraryBig, CircleSlash, ChevronRight, RefreshCcw, CheckCircle2 } from 'lucide-react';
+import W9Form from '@/components/dashboard/W9Form';
+import { Sheet, SheetTrigger } from '@/components/ui/sheet';
 
 interface Activity {
   id: string;
@@ -68,6 +69,8 @@ export default function DashboardPage() {
   const router = useRouter();
   const [currentYear, setCurrentYear] = useState<string>('');
   const [taxYears, setTaxYears] = useState<string[]>([]);
+  const [isW9SheetOpen, setIsW9SheetOpen] = useState(false);
+  const [w9Status, setW9Status] = useState<"pending" | "completed">("pending");
 
   useEffect(() => {
     const year = new Date().getFullYear();
@@ -80,36 +83,41 @@ export default function DashboardPage() {
     router.push('/login');
   };
 
+  const handleSaveW9 = () => {
+    setW9Status("completed");
+    setIsW9SheetOpen(false);
+    // Potentially show a success toast here
+  };
+
   const userName = "Martin";
   const userEmail = "martinmiller@gmail.com";
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white p-6 shadow-md flex flex-col">
+    <div className="flex min-h-screen bg-background">
+      <aside className="w-64 bg-card p-6 shadow-md flex flex-col">
         <Link href="/dashboard" className="flex items-center gap-2 mb-10">
-          <LogoIcon className="h-9 w-9 text-blue-600" />
+          <LogoIcon className="h-9 w-9 text-primary" />
           <div>
-            <span className="font-headline text-xl font-semibold text-blue-600">CLIENT</span>
-            <span className="font-headline text-xl font-medium text-blue-500"> Portal</span>
+            <span className="font-headline text-xl font-semibold text-primary">CLIENT</span>
+            <span className="font-headline text-xl font-medium text-primary/80"> Portal</span>
           </div>
         </Link>
         <nav className="flex-grow">
           <ul>
             <li>
-              <Link href="/dashboard" className="flex items-center gap-3 p-3 rounded-md bg-blue-500 text-white font-medium">
+              <Link href="/dashboard" className="flex items-center gap-3 p-3 rounded-md bg-primary text-primary-foreground font-medium">
                 <LayoutDashboard size={20} />
                 Dashboard
               </Link>
             </li>
             <li className="mt-2">
-              <Link href="#" className="flex items-center gap-3 p-3 rounded-md hover:bg-gray-200 text-gray-700">
+              <Link href="#" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted text-foreground/80">
                 <BarChart3 size={20} />
                 Reports
               </Link>
             </li>
             <li className="mt-2">
-              <Link href="#" className="flex items-center gap-3 p-3 rounded-md hover:bg-gray-200 text-gray-700">
+              <Link href="#" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted text-foreground/80">
                 <Settings size={20} />
                 Settings
               </Link>
@@ -118,23 +126,22 @@ export default function DashboardPage() {
         </nav>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-6 md:p-10 space-y-6">
+      <main className="flex-1 p-6 md:p-10 space-y-6 bg-muted/30">
         <header className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-            <p className="text-gray-500 mt-1">
+            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground mt-1">
               The following vendors have successfully completed their W-9 submissions using both the Request By URL and Request By Email methods
             </p>
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="font-semibold text-gray-700">Welcome {userName}!</p>
-              <p className="text-xs text-gray-500">{userEmail}</p>
+              <p className="font-semibold text-foreground">Welcome {userName}!</p>
+              <p className="text-xs text-muted-foreground">{userEmail}</p>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full bg-blue-500 text-white text-lg font-semibold">
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full bg-primary text-primary-foreground text-lg font-semibold">
                   {userName.charAt(0).toUpperCase()}
                 </Button>
               </DropdownMenuTrigger>
@@ -154,7 +161,7 @@ export default function DashboardPage() {
               </DropdownMenuContent>
             </DropdownMenu>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Tax Year</span>
+              <span className="text-sm text-foreground/80">Tax Year</span>
               <Select value={currentYear} onValueChange={setCurrentYear}>
                 <SelectTrigger className="w-[100px] h-9">
                   <SelectValue placeholder="Year" />
@@ -169,38 +176,36 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {/* Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">Total Activities</CardTitle>
-              <ListChecks className="h-5 w-5 text-blue-500" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Activities</CardTitle>
+              <ListChecks className="h-5 w-5 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-800">310</div>
+              <div className="text-2xl font-bold text-foreground">310</div>
             </CardContent>
           </Card>
           <Card className="shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">Total Payouts</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Payouts</CardTitle>
               <LibraryBig className="h-5 w-5 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-800">$13,000.00</div>
+              <div className="text-2xl font-bold text-foreground">$13,000.00</div>
             </CardContent>
           </Card>
           <Card className="shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">Total Withhold</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Withhold</CardTitle>
               <CircleSlash className="h-5 w-5 text-orange-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-800">$4,000.91</div>
+              <div className="text-2xl font-bold text-foreground">$4,000.91</div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Tabs and Vendor Details */}
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="lg:flex-grow">
             <Tabs defaultValue="activities" className="w-full">
@@ -214,10 +219,10 @@ export default function DashboardPage() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="bg-gray-50">Date</TableHead>
-                          <TableHead className="bg-gray-50">Description</TableHead>
-                          <TableHead className="bg-gray-50">Activity Reference</TableHead>
-                          <TableHead className="text-right bg-gray-50">Amount</TableHead>
+                          <TableHead className="bg-muted/50">Date</TableHead>
+                          <TableHead className="bg-muted/50">Description</TableHead>
+                          <TableHead className="bg-muted/50">Activity Reference</TableHead>
+                          <TableHead className="text-right bg-muted/50">Amount</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -240,10 +245,10 @@ export default function DashboardPage() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="bg-gray-50">Date</TableHead>
-                          <TableHead className="bg-gray-50">Payroll Reference</TableHead>
-                          <TableHead className="text-right bg-gray-50">Payout</TableHead>
-                          <TableHead className="text-right bg-gray-50">Withhold</TableHead>
+                          <TableHead className="bg-muted/50">Date</TableHead>
+                          <TableHead className="bg-muted/50">Payroll Reference</TableHead>
+                          <TableHead className="text-right bg-muted/50">Payout</TableHead>
+                          <TableHead className="text-right bg-muted/50">Withhold</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -263,44 +268,62 @@ export default function DashboardPage() {
             </Tabs>
           </div>
 
-          {/* Vendor Details Card */}
           <div className="lg:w-96 flex-shrink-0">
             <Card className="shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-lg">Vendor Details</CardTitle>
-                <Button variant="link" size="sm" className="p-0 h-auto text-blue-600 hover:text-blue-700">
+                <Button variant="link" size="sm" className="p-0 h-auto text-primary hover:text-primary/80">
                   <RefreshCcw size={16} className="mr-1" />
                   Refresh
                 </Button>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500">Name</h4>
-                  <p className="text-gray-800">Martin Miller</p>
+                  <h4 className="text-sm font-medium text-muted-foreground">Name</h4>
+                  <p className="text-foreground">Martin Miller</p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500">Address</h4>
-                  <p className="text-gray-800">123 Main street, CVG Road,<br/>CA 569384</p>
+                  <h4 className="text-sm font-medium text-muted-foreground">Address</h4>
+                  <p className="text-foreground">123 Main street, CVG Road,<br/>CA 569384</p>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium text-gray-500">W-9 Status</h4>
-                  <Link href="#" className="flex items-center text-orange-500 hover:text-orange-600">
-                    - <span className="ml-auto">Complete W-9 <ChevronRight size={16} /></span>
-                  </Link>
+                  <h4 className="text-sm font-medium text-muted-foreground">W-9 Status</h4>
+                  {w9Status === "pending" ? (
+                    <Button variant="link" className="p-0 h-auto text-orange-500 hover:text-orange-600 flex items-center" onClick={() => setIsW9SheetOpen(true)}>
+                      - <span className="ml-auto">Complete W-9 <ChevronRight size={16} /></span>
+                    </Button>
+                  ) : (
+                    <div className="flex items-center text-green-600">
+                       <CheckCircle2 size={16} className="mr-1" /> Completed
+                       <Button variant="link" className="p-0 h-auto text-primary hover:text-primary/80 ml-auto">
+                         View W-9 <ChevronRight size={16} />
+                       </Button>
+                    </div>
+                  )}
                 </div>
                  <div>
-                  <h4 className="text-sm font-medium text-gray-500">TIN Matching Status</h4>
-                   <p className="text-gray-800">-</p>
+                  <h4 className="text-sm font-medium text-muted-foreground">TIN Matching Status</h4>
+                   <p className="text-foreground">-</p>
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
         
-        <footer className="text-center text-sm text-gray-500 pt-8">
+        <footer className="text-center text-sm text-muted-foreground pt-8">
           This is a sample Vendor portal developed by TaxBandits.
         </footer>
       </main>
+      
+      {isW9SheetOpen && (
+        <W9Form
+          isOpen={isW9SheetOpen}
+          onClose={() => setIsW9SheetOpen(false)}
+          onSave={handleSaveW9}
+        />
+      )}
     </div>
   );
 }
+
+    
