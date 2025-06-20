@@ -35,9 +35,24 @@ export default function W9ViewModal({ isOpen, onClose }: W9ViewModalProps) {
         <div className="p-6">
           <Tabs defaultValue="view-w9" className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-4 bg-muted">
-              <TabsTrigger value="view-w9" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">View W-9</TabsTrigger>
-              <TabsTrigger value="w9-status-change" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">W-9 Status Change</TabsTrigger>
-              <TabsTrigger value="tin-matching-status-change" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">TIN Matching Status Change</TabsTrigger>
+              <TabsTrigger 
+                value="view-w9" 
+                className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=inactive]:text-muted-foreground"
+              >
+                View W-9
+              </TabsTrigger>
+              <TabsTrigger 
+                value="w9-status-change"
+                className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=inactive]:text-muted-foreground"
+              >
+                W-9 Status Change
+              </TabsTrigger>
+              <TabsTrigger 
+                value="tin-matching-status-change"
+                className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=inactive]:text-muted-foreground"
+              >
+                TIN Matching Status Change
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="view-w9">
               <div className="border rounded-md">
