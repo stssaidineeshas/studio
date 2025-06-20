@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +23,7 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  password: z.string().min(1, { // Changed min to 1 as per image (no specific length mentioned)
+  password: z.string().min(1, { 
     message: "Password is required.",
   }),
 });
@@ -42,7 +43,7 @@ export default function LoginForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    if (values.email === "martinmiller@gmail.com" && values.password === "password") { // Example credentials
+    if (values.email === "martinmiller@gmail.com" && values.password === "password") { 
       toast({
         title: "Login Successful",
         description: "Redirecting to dashboard...",
@@ -63,7 +64,7 @@ export default function LoginForm() {
   return (
     <Card className="w-full max-w-md shadow-xl rounded-lg">
       <CardHeader className="text-left pt-8 pb-6 px-8">
-        <CardTitle className="text-2xl font-semibold font-body">Sign In to your Account</CardTitle>
+        <CardTitle className="text-2xl font-semibold font-body">Sign in to your account</CardTitle>
       </CardHeader>
       <CardContent className="px-8 pb-8">
         <Form {...form}>
@@ -77,7 +78,7 @@ export default function LoginForm() {
                   <FormControl>
                     <Input 
                       type="email" 
-                      placeholder="martinmiller@gmail.com" 
+                      placeholder="Enter your email" 
                       {...field} 
                       aria-describedby="email-message"
                       className="text-base md:text-sm h-11"
@@ -96,7 +97,7 @@ export default function LoginForm() {
                   <FormControl>
                     <Input 
                       type="password" 
-                      placeholder="••••••••" 
+                      placeholder="Enter your password" 
                       {...field} 
                       aria-describedby="password-message"
                       className="text-base md:text-sm h-11"

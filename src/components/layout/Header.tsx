@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import LogoIcon from '@/components/icons/LogoIcon';
@@ -23,6 +24,9 @@ const NavLinks = () => (
     <Button variant="ghost" asChild>
       <Link href="/dashboard">Dashboard</Link>
     </Button>
+    <Button variant="ghost" asChild>
+      <Link href="/demo">Demo</Link>
+    </Button>
   </>
 );
 
@@ -31,7 +35,7 @@ const UserAuthButtons = () => (
     <DropdownMenuTrigger asChild>
       <Button variant="ghost" className="relative h-8 w-8 rounded-full">
         <Avatar className="h-8 w-8">
-          <AvatarImage src="https://placehold.co/40x40.png" alt="User avatar" data-ai-hint="user avatar" />
+          <AvatarImage src="https://placehold.co/40x40.png" alt="User avatar" data-ai-hint="user avatar"/>
           <AvatarFallback>
             <UserCircle className="h-6 w-6" />
           </AvatarFallback>
