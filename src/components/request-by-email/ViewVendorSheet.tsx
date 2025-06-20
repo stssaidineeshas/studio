@@ -11,9 +11,11 @@ import {
   SheetHeader,
   SheetTitle,
   SheetFooter,
-  SheetClose,
+  // SheetClose, // No longer needed here for the header X button
 } from "@/components/ui/sheet";
-import { X, Circle } from "lucide-react";
+// import { X, Circle } from "lucide-react"; // X No longer needed if default X is used
+import { Circle } from "lucide-react";
+
 
 interface Vendor {
   id: string;
@@ -81,12 +83,7 @@ export default function ViewVendorSheet({ isOpen, onClose, vendor }: ViewVendorS
         <SheetHeader className="p-4 border-b" style={{ backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))' }}>
           <div className="flex justify-between items-center">
             <SheetTitle>Vendor Details</SheetTitle>
-            <SheetClose asChild>
-              <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary/80">
-                <X className="h-5 w-5" />
-                <span className="sr-only">Close</span>
-              </Button>
-            </SheetClose>
+            {/* The default SheetContent close button will appear here */}
           </div>
         </SheetHeader>
 

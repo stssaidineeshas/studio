@@ -12,9 +12,9 @@ import {
   SheetHeader,
   SheetTitle,
   SheetFooter,
-  SheetClose,
+  // SheetClose, // No longer needed here for the header X button
 } from "@/components/ui/sheet";
-import { X } from "lucide-react";
+// import { X } from "lucide-react"; // No longer needed if default X is used
 import { useState, type FormEvent } from 'react';
 
 interface VendorFormData {
@@ -24,6 +24,8 @@ interface VendorFormData {
   activities: number;
   payouts: string;
   withheld: string;
+  // Added ein to match table data structure, though not in original offcanvas image
+  ein: string; 
 }
 
 interface AddVendorSheetProps {
@@ -37,6 +39,7 @@ export default function AddVendorSheet({ isOpen, onClose, onSave }: AddVendorShe
     name: '',
     vendorId: '',
     email: '',
+    ein: '', // Initialize EIN
     activities: 0,
     payouts: '',
     withheld: ''
@@ -54,7 +57,7 @@ export default function AddVendorSheet({ isOpen, onClose, onSave }: AddVendorShe
     event.preventDefault();
     onSave(formData);
     // Optionally reset form after save
-    setFormData({ name: '', vendorId: '', email: '', activities: 0, payouts: '', withheld: '' });
+    setFormData({ name: '', vendorId: '', email: '', ein: '', activities: 0, payouts: '', withheld: '' });
   };
 
   return (
@@ -63,12 +66,7 @@ export default function AddVendorSheet({ isOpen, onClose, onSave }: AddVendorShe
         <SheetHeader className="p-4 border-b" style={{ backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))' }}>
           <div className="flex justify-between items-center">
             <SheetTitle>Add Vendor</SheetTitle>
-            <SheetClose asChild>
-              <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary/80">
-                <X className="h-5 w-5" />
-                <span className="sr-only">Close</span>
-              </Button>
-            </SheetClose>
+            {/* The default SheetContent close button will appear here */}
           </div>
         </SheetHeader>
 
@@ -86,9 +84,15 @@ export default function AddVendorSheet({ isOpen, onClose, onSave }: AddVendorShe
                   <Input id="vendorId" placeholder="#84869" value={formData.vendorId} onChange={handleChange} required/>
                 </div>
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="email">Vendor Email address</Label>
-                <Input id="email" type="email" placeholder="davidkinston@gmail.com" value={formData.email} onChange={handleChange} required/>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="space-y-1">
+                  <Label htmlFor="email">Vendor Email address</Label>
+                  <Input id="email" type="email" placeholder="davidkinston@gmail.com" value={formData.email} onChange={handleChange} required/>
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="ein">EIN</Label>
+                  <Input id="ein" placeholder="XX-XXXXXXX" value={formData.ein} onChange={handleChange} required/>
+                </div>
               </div>
             </div>
 
