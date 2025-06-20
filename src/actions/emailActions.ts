@@ -1,8 +1,8 @@
 
 'use server';
 
-import AWS from 'aws-sdk';
-import mimemessage from 'mimemessage';
+import type AWS from 'aws-sdk';
+import { SES } from 'aws-sdk'; // Use specific import for SES
 
 interface MailData {
   email: string;
@@ -21,40 +21,36 @@ export async function sendMailAction(data: MailData): Promise<{ success: boolean
     return { success: false, message: 'Email server configuration error. Please contact support.' };
   }
 
-  const ses = new AWS.SES({
+  const ses = new SES({ // Use SES directly
     region: region,
     accessKeyId: accessKeyId,
     secretAccessKey: secretAccessKey,
   });
 
-  const emailData = mimemessage.factory({
-    contentType: 'multipart/mixed',
-    body: [],
-  });
-
-  emailData.header('From', `Taxbandits API <${fromEmail}>`);
-  emailData.header('To', data.email);
-  emailData.header('Subject', data.subject);
-
-  const htmlContent = mimemessage.factory({
-    contentType: 'text/html;charset=utf-8', // Added charset
-    body: data.emailTemplate,
-  });
-
-  emailData.body.push(htmlContent);
-
-  const params = {
-    RawMessage: {
-      Data: emailData.toString(),
+  const params: AWS.SES.SendEmailRequest = {
+    Source: `Taxbandits API <${fromEmail}>`,
+    Destination: {
+      ToAddresses: [data.email],
+    },
+    Message: {
+      Subject: {
+        Data: data.subject,
+        Charset: 'UTF-8',
+      },
+      Body: {
+        Html: {
+          Data: data.emailTemplate,
+          Charset: 'UTF-8',
+        },
+      },
     },
   };
 
   try {
-    await ses.sendRawEmail(params).promise();
+    await ses.sendEmail(params).promise();
     return { success: true, message: 'Email sent successfully.' };
   } catch (err: any) {
     console.error(`Failed to send email to ${data.email}:`, err);
-    // Provide a more generic error message to the client
     return { success: false, message: `Failed to send email. Error: ${err.code || err.message || 'Unknown SES error'}` };
   }
 }
