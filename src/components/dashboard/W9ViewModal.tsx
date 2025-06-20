@@ -12,7 +12,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { X, Copy } from 'lucide-react';
+import { X, Copy, ZoomIn, ZoomOut, Download, MoreVertical, Printer } from 'lucide-react';
 
 interface W9ViewModalProps {
   isOpen: boolean;
@@ -48,26 +48,22 @@ export default function W9ViewModal({ isOpen, onClose }: W9ViewModalProps) {
   ]
 }`;
 
-  // Basic copy to clipboard function
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
       // Optionally, show a toast notification for success
-      // alert("Payload copied to clipboard!");
     } catch (err) {
-      // Handle errors, e.g., user denied permission
-      // alert("Failed to copy payload.");
+      // Handle errors
     }
   };
 
-
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className="sm:max-w-5xl p-0">
         <DialogHeader className="p-4 border-b flex flex-row justify-between items-center" style={{ backgroundColor: '#003366' }}>
           <DialogTitle className="text-lg font-semibold text-white">Webhook payload</DialogTitle>
           <DialogClose asChild>
-            <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full text-white hover:bg-white/20">
+            <Button variant="ghost" size="icon" className="rounded-full text-white hover:bg-white/20">
               <X className="h-5 w-5" />
               <span className="sr-only">Close</span>
             </Button>
@@ -76,19 +72,19 @@ export default function W9ViewModal({ isOpen, onClose }: W9ViewModalProps) {
         <div className="p-6">
           <Tabs defaultValue="view-w9" className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted">
-              <TabsTrigger 
-                value="view-w9" 
+              <TabsTrigger
+                value="view-w9"
                 className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=inactive]:text-muted-foreground py-2.5"
               >
                 View W-9
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="w9-status-change"
                 className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=inactive]:text-muted-foreground py-2.5"
               >
                 W-9 Status Change
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="tin-matching-status-change"
                 className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=inactive]:text-muted-foreground py-2.5"
               >
@@ -101,16 +97,18 @@ export default function W9ViewModal({ isOpen, onClose }: W9ViewModalProps) {
                   <span className="text-sm font-medium text-foreground">Form W-9 (Rev. March 2024)</span>
                   <div className="flex items-center gap-1">
                     <Button variant="ghost" size="sm" className="text-xs">1 / 6</Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7"><ZoomIn size={16}/></Button>
                     <span className="text-xs">156%</span>
-                    <Button variant="ghost" size="icon" className="h-7 w-7"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/></svg></Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></Button>
-                     <Button variant="ghost" size="icon" className="h-7 w-7"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7"><ZoomOut size={16}/></Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7"><Download size={16}/></Button>
+                    {/* Assuming a Printer icon might be desired here based on context */}
+                    {/* <Button variant="ghost" size="icon" className="h-7 w-7"><Printer size={16}/></Button> */}
+                    <Button variant="ghost" size="icon" className="h-7 w-7"><MoreVertical size={16}/></Button>
                   </div>
                 </div>
                 <div className="aspect-[8.5/11] w-full relative bg-white">
                   <Image
-                    src="https://placehold.co/850x1100.png" 
+                    src="https://placehold.co/850x1100.png"
                     alt="W-9 Form Placeholder"
                     layout="fill"
                     objectFit="contain"
@@ -144,9 +142,9 @@ export default function W9ViewModal({ isOpen, onClose }: W9ViewModalProps) {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-md font-semibold text-foreground">Webhook Payload</h3>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="h-8 w-8 text-muted-foreground hover:text-foreground"
                         onClick={() => handleCopy(webhookPayloadContent)}
                         aria-label="Copy payload"
@@ -172,3 +170,5 @@ export default function W9ViewModal({ isOpen, onClose }: W9ViewModalProps) {
     </Dialog>
   );
 }
+
+    
