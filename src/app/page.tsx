@@ -16,9 +16,6 @@ export default function Home() {
         </p>
         <div className="space-x-4">
           <Button size="lg" asChild className="transition-transform duration-200 hover:scale-105">
-            <Link href="/signup">Get Started</Link>
-          </Button>
-          <Button size="lg" variant="outline" asChild className="transition-transform duration-200 hover:scale-105">
             <Link href="/login">Login</Link>
           </Button>
         </div>

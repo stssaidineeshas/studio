@@ -51,9 +51,6 @@ const UserAuthButtons = () => (
       <DropdownMenuItem asChild>
         <Link href="/login">Login</Link>
       </DropdownMenuItem>
-      <DropdownMenuItem asChild>
-        <Link href="/signup">Sign Up</Link>
-      </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem disabled>
         Log out (disabled)
