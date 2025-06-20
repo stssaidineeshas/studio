@@ -53,9 +53,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2" aria-label="CertChain Home">
+        <Link href="/" className="flex items-center gap-2" aria-label="Client Portal Home">
           <LogoIcon className="h-8 w-8 text-primary" />
-          <span className="font-headline text-xl font-semibold tracking-tight">CertChain Demo</span>
+          <span className="font-headline text-xl font-semibold tracking-tight">Client Portal</span>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-2">
@@ -73,9 +73,9 @@ export default function Header() {
             </SheetTrigger>
             <SheetContent side="right">
               <div className="flex flex-col space-y-4 p-4">
-                <Link href="/" className="flex items-center gap-2 mb-4" aria-label="CertChain Home">
+                <Link href="/" className="flex items-center gap-2 mb-4" aria-label="Client Portal Home">
                   <LogoIcon className="h-8 w-8 text-primary" />
-                  <span className="font-headline text-xl font-semibold tracking-tight">CertChain Demo</span>
+                  <span className="font-headline text-xl font-semibold tracking-tight">Client Portal</span>
                 </Link>
                 {/* NavLinks removed from mobile */}
                 <div className="pt-4 border-t">

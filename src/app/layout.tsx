@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -5,8 +6,8 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
-  title: 'CertChain Demo',
-  description: 'A demo application for WH Certificate management.',
+  title: 'Client Portal',
+  description: 'Client portal for accessing services and managing information.',
 };
 
 export default function RootLayout({
