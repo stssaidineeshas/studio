@@ -30,6 +30,7 @@ import { Bell, Search, PlusCircle, Eye, SendHorizonal, Circle } from "lucide-rea
 import AddVendorSheet from '@/components/request-by-email/AddVendorSheet';
 import ViewVendorSheet from '@/components/request-by-email/ViewVendorSheet';
 import { useToast } from '@/hooks/use-toast';
+import { sendMailAction } from '@/actions/emailActions';
 
 interface Vendor {
   id: string;
@@ -45,15 +46,15 @@ interface Vendor {
 }
 
 const initialVendorsData: Vendor[] = [
-  { id: '1', name: 'Tristian Stubbs', vendorId: '#73489', email: 'tristianstubbs@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Completed', tinStatus: 'In Progress' },
-  { id: '2', name: 'Steve Martin', vendorId: '#84659', email: 'steve@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Completed', tinStatus: 'Success' },
-  { id: '3', name: 'Martin Shane', vendorId: '#73489', email: 'martinshane@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Requested W-9', tinStatus: 'Order Created' },
-  { id: '4', name: 'Clara Marshall', vendorId: '#45879', email: 'claramarsh@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Not Requested', tinStatus: 'Not Requested' },
+  { id: '1', name: 'Tristian Stubbs', vendorId: '#73489', email: 'tristianstubbs@example.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Completed', tinStatus: 'Success' },
+  { id: '2', name: 'Steve Martin', vendorId: '#84659', email: 'saidineesha.s@spantechnologyservices.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Not Requested', tinStatus: 'Not Requested' },
+  { id: '3', name: 'Martin Shane', vendorId: '#73489', email: 'martinshane@example.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Requested W-9', tinStatus: 'Order Created' },
+  { id: '4', name: 'Clara Marshall', vendorId: '#45879', email: 'claramarsh@example.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Not Requested', tinStatus: 'Not Requested' },
   { id: '5', name: 'John Doe', vendorId: '#12345', email: 'johndoe@example.com', ein: '12-345XXXX', activities: 100, payouts: '$1,000.00', withheld: '$100.00', w9Status: 'Not Requested', tinStatus: 'Not Requested' },
 ];
 
 const getStatusIndicator = (status: Vendor["w9Status"] | Vendor["tinStatus"]) => {
-  let colorClass = "text-gray-400"; // Default for Not Requested
+  let colorClass = "text-gray-400"; 
   switch (status) {
     case "Completed":
     case "Success":
@@ -67,7 +68,7 @@ const getStatusIndicator = (status: Vendor["w9Status"] | Vendor["tinStatus"]) =>
       colorClass = "text-blue-500";
       break;
     case "Not Requested":
-      // colorClass remains text-gray-400
+      colorClass = "text-gray-400";
       break;
     default:
       colorClass = "text-gray-500";
@@ -125,45 +126,118 @@ export default function RequestByEmailPage() {
     setIsViewVendorSheetOpen(true);
   };
 
-  const handleSendRequestEmail = (vendorId: string) => {
-    setVendorsData(prevVendors =>
-      prevVendors.map(vendor =>
-        vendor.id === vendorId && vendor.w9Status === 'Not Requested'
-          ? { ...vendor, w9Status: 'Requested W-9', tinStatus: 'Order Created' }
-          : vendor
-      )
-    );
+  const generateEmailTemplate = (vendorName?: string) => {
+    return `
+    <p>Request Approved</p>
+    <p>Hello ${vendorName || ''},</p>
+    <p>You have requested W9 from through email.</p>
+    <br/>
+    <p>Regards,</p>
+    <p>Team API</p>
+    <br/>
+    <p>&copy; ${new Date().getFullYear()} Taxbandits API. All rights reserved.</p>
+  `;
+  };
+
+  const handleSendRequestEmail = async (vendorId: string) => {
     const vendor = vendorsData.find(v => v.id === vendorId);
-    if (vendor) {
-      console.log(`Simulating: W-9 request email sent to ${vendor.email}`);
-      toast({
-        title: "Email Sent",
-        description: `W-9 request email has been sent to ${vendor.name}.`,
-      });
+    if (vendor && vendor.w9Status === 'Not Requested') {
+      const mailData = {
+        email: vendor.email,
+        subject: 'Request by email: W-9 Form',
+        emailTemplate: generateEmailTemplate(vendor.name),
+      };
+      
+      toast({ title: "Sending Email...", description: `Processing request for ${vendor.name}.` });
+      const result = await sendMailAction(mailData);
+
+      if (result.success) {
+        setVendorsData(prevVendors =>
+          prevVendors.map(v =>
+            v.id === vendorId
+              ? { ...v, w9Status: 'Requested W-9', tinStatus: 'Order Created' }
+              : v
+          )
+        );
+        toast({
+          title: "Email Sent",
+          description: `W-9 request email has been sent to ${vendor.name}.`,
+        });
+      } else {
+        toast({
+          title: "Email Failed",
+          description: result.message || `Failed to send W-9 request to ${vendor.name}.`,
+          variant: "destructive",
+        });
+      }
+    } else if (vendor) {
+       toast({
+          title: "Action Not Allowed",
+          description: `W-9 request for ${vendor.name} has already been processed or is completed.`,
+          variant: "destructive",
+        });
     }
   };
 
-  const handleSendBulkRequestEmails = () => {
-    let emailsSentCount = 0;
-    setVendorsData(prevVendors =>
-      prevVendors.map(vendor => {
-        if (selectedVendorIds.includes(vendor.id) && vendor.w9Status === 'Not Requested') {
-          console.log(`Simulating: W-9 request email sent to ${vendor.email} (bulk)`);
-          emailsSentCount++;
-          return { ...vendor, w9Status: 'Requested W-9', tinStatus: 'Order Created' };
-        }
-        return vendor;
-      })
-    );
-    if (emailsSentCount > 0) {
+  const handleSendBulkRequestEmails = async () => {
+    let emailsAttempted = 0;
+    let emailsSentSuccessfully = 0;
+
+    const eligibleVendorIds = selectedVendorIds.filter(id => {
+      const vendor = vendorsData.find(v => v.id === id);
+      return vendor && vendor.w9Status === 'Not Requested';
+    });
+
+    if (eligibleVendorIds.length === 0) {
       toast({
-        title: "Bulk Emails Sent",
-        description: `${emailsSentCount} W-9 request email(s) have been sent.`,
-      });
-    } else {
-       toast({
-        title: "No Emails Sent",
+        title: "No Eligible Vendors",
         description: "No selected vendors were eligible for a new W-9 request.",
+        variant: "destructive"
+      });
+      setSelectedVendorIds([]);
+      return;
+    }
+    
+    toast({ title: "Processing Bulk Email Requests...", description: `Sending ${eligibleVendorIds.length} email(s).` });
+
+    for (const vendorId of eligibleVendorIds) {
+      const vendor = vendorsData.find(v => v.id === vendorId);
+      if (vendor) {
+        emailsAttempted++;
+        const mailData = {
+          email: vendor.email,
+          subject: 'Request by email: W-9 Form',
+          emailTemplate: generateEmailTemplate(vendor.name),
+        };
+        const result = await sendMailAction(mailData);
+        if (result.success) {
+          emailsSentSuccessfully++;
+          setVendorsData(prevVendors =>
+            prevVendors.map(v =>
+              v.id === vendorId
+                ? { ...v, w9Status: 'Requested W-9', tinStatus: 'Order Created' }
+                : v
+            )
+          );
+        } else {
+          toast({
+            title: "Email Failed (Bulk)",
+            description: `Failed for ${vendor.name}: ${result.message}`,
+            variant: "destructive"
+          });
+        }
+      }
+    }
+
+    if (emailsSentSuccessfully > 0) {
+      toast({
+        title: "Bulk Emails Processed",
+        description: `${emailsSentSuccessfully} of ${emailsAttempted} W-9 request email(s) have been sent.`,
+      });
+    } else if (emailsAttempted > 0) {
+       toast({
+        title: "Bulk Emails Failed",
+        description: `All ${emailsAttempted} email attempts failed. Check console for details.`,
         variant: "destructive"
       });
     }
@@ -324,18 +398,20 @@ export default function RequestByEmailPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Button variant="ghost" size="icon" className="mr-1" onClick={() => handleViewVendor(vendor)}>
-                        <Eye className="h-5 w-5 text-primary" />
-                      </Button>
-                       <Button 
-                         variant="ghost" 
-                         size="icon" 
-                         disabled={vendor.w9Status !== 'Not Requested'}
-                         onClick={() => handleSendRequestEmail(vendor.id)}
-                         title={vendor.w9Status === 'Not Requested' ? "Send W-9 Request Email" : "W-9 Request Already Sent/Completed"}
+                      {vendor.w9Status === 'Not Requested' ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleSendRequestEmail(vendor.id)}
+                          title="Send W-9 Request Email"
                         >
-                        <SendHorizonal className={`h-5 w-5 ${vendor.w9Status === 'Not Requested' ? 'text-primary' : 'text-primary/50'}`} />
-                      </Button>
+                          <SendHorizonal className="h-5 w-5 text-primary" />
+                        </Button>
+                      ) : (
+                        <Button variant="ghost" size="icon" onClick={() => handleViewVendor(vendor)} title="View Vendor Details">
+                          <Eye className="h-5 w-5 text-primary" />
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -367,6 +443,3 @@ export default function RequestByEmailPage() {
     </div>
   );
 }
-
-
-    
