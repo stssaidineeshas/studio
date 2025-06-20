@@ -15,21 +15,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserCircle } from 'lucide-react';
 
-
-const NavLinks = () => (
-  <>
-    <Button variant="ghost" asChild>
-      <Link href="/">Home</Link>
-    </Button>
-    <Button variant="ghost" asChild>
-      <Link href="/dashboard">Dashboard</Link>
-    </Button>
-    <Button variant="ghost" asChild>
-      <Link href="/demo">Demo</Link>
-    </Button>
-  </>
-);
-
 const UserAuthButtons = () => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
@@ -74,7 +59,7 @@ export default function Header() {
         </Link>
         
         <nav className="hidden md:flex items-center space-x-2">
-          <NavLinks />
+          {/* NavLinks removed */}
           <UserAuthButtons />
         </nav>
 
@@ -92,7 +77,7 @@ export default function Header() {
                   <LogoIcon className="h-8 w-8 text-primary" />
                   <span className="font-headline text-xl font-semibold tracking-tight">CertChain Demo</span>
                 </Link>
-                <NavLinks />
+                {/* NavLinks removed from mobile */}
                 <div className="pt-4 border-t">
                   <UserAuthButtons />
                 </div>
