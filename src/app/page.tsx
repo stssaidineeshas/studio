@@ -37,7 +37,7 @@ export default function DemoPage() {
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-xl font-semibold">Request By Email</CardTitle>
             <Button variant="link" asChild className="text-primary p-0 h-auto">
-              <Link href="#"> {/* Placeholder link */}
+              <Link href="/request-by-email"> 
                 View Demo <ChevronRight className="h-4 w-4 ml-1" />
               </Link>
             </Button>

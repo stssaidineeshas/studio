@@ -12,15 +12,15 @@ export default function RootLayoutClient({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isDashboardRoute = pathname.startsWith('/dashboard');
+  const isFullPageLayoutRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/request-by-email');
 
   return (
     <>
-      {!isDashboardRoute && <Header />}
-      <main className={`flex-grow ${!isDashboardRoute ? 'container mx-auto px-4 py-8' : ''}`}>
+      {!isFullPageLayoutRoute && <Header />}
+      <main className={`flex-grow ${!isFullPageLayoutRoute ? 'container mx-auto px-4 py-8' : ''}`}>
         {children}
       </main>
-      {!isDashboardRoute && <Footer />}
+      {!isFullPageLayoutRoute && <Footer />}
       <Toaster />
     </>
   );
