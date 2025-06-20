@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/table";
 import LogoIcon from "@/components/icons/LogoIcon";
 import { Bell, Search, PlusCircle, Eye, SendHorizonal, Circle } from "lucide-react";
+import AddVendorSheet from '@/components/request-by-email/AddVendorSheet';
 
 interface Vendor {
   id: string;
@@ -55,7 +57,7 @@ const getStatusIndicator = (status: Vendor["w9Status"] | Vendor["tinStatus"]) =>
       colorClass = "text-green-500";
       break;
     case "In Progress":
-      colorClass = "text-yellow-500";
+      colorClass = "text-yellow-500"; // Changed to yellow for "In Progress" for better visual distinction
       break;
     case "Requested W-9":
     case "Order Created":
@@ -71,9 +73,16 @@ const getStatusIndicator = (status: Vendor["w9Status"] | Vendor["tinStatus"]) =>
 export default function RequestByEmailPage() {
   const router = useRouter();
   const userName = "Martin"; // Hardcoded for example
+  const [isAddVendorSheetOpen, setIsAddVendorSheetOpen] = useState(false);
 
   const handleLogout = () => {
     router.push('/login');
+  };
+
+  const handleSaveVendor = () => {
+    // Logic to save vendor data would go here
+    console.log("Vendor saved!"); // Placeholder
+    setIsAddVendorSheetOpen(false);
   };
 
   return (
@@ -107,7 +116,6 @@ export default function RequestByEmailPage() {
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">{userName}</p>
                     <p className="text-xs leading-none text-muted-foreground">
-                      {/* Replace with actual user email if available */}
                       martinmiller@gmail.com 
                     </p>
                   </div>
@@ -131,7 +139,7 @@ export default function RequestByEmailPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input type="search" placeholder="Search Lead" className="pl-10 w-full" />
           </div>
-          <Button className="w-full md:w-auto">
+          <Button className="w-full md:w-auto" onClick={() => setIsAddVendorSheetOpen(true)}>
             <PlusCircle className="mr-2 h-5 w-5" />
             Add Vendor
           </Button>
@@ -201,6 +209,12 @@ export default function RequestByEmailPage() {
       <footer className="text-center text-sm text-muted-foreground py-6 px-6 border-t">
         This is a sample Vendor portal developed by TaxBandits.
       </footer>
+
+      <AddVendorSheet
+        isOpen={isAddVendorSheetOpen}
+        onClose={() => setIsAddVendorSheetOpen(false)}
+        onSave={handleSaveVendor}
+      />
     </div>
   );
 }
