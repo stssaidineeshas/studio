@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import LogoIcon from '@/components/icons/LogoIcon';
-import { Menu } from 'lucide-react';
+import { Menu, UserCircle } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
   DropdownMenu,
@@ -13,16 +13,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserCircle } from 'lucide-react';
 
-const UserAuthButtons = () => (
+const UserAuthButtons = () => {
+  const userName = "Martin"; // Hardcoded for consistency with dashboard
+  const userEmail = "martinmiller@gmail.com"; // Hardcoded
+
+  return (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-        <Avatar className="h-8 w-8">
-          <AvatarImage src="https://placehold.co/40x40.png" alt="User avatar" data-ai-hint="user avatar"/>
-          <AvatarFallback>
-            <UserCircle className="h-6 w-6" />
+        <Avatar className="h-8 w-8 bg-primary text-primary-foreground flex items-center justify-center">
+           {/* <AvatarImage src="https://placehold.co/40x40.png" alt="User avatar" data-ai-hint="user avatar"/> */}
+          <AvatarFallback className="bg-blue-500 text-white">
+            {userName ? userName.charAt(0).toUpperCase() : <UserCircle className="h-6 w-6" />}
           </AvatarFallback>
         </Avatar>
       </Button>
@@ -30,9 +33,9 @@ const UserAuthButtons = () => (
     <DropdownMenuContent className="w-56" align="end" forceMount>
       <DropdownMenuLabel className="font-normal">
         <div className="flex flex-col space-y-1">
-          <p className="text-sm font-medium leading-none">Guest User</p>
+          <p className="text-sm font-medium leading-none">{userName || "Guest User"}</p>
           <p className="text-xs leading-none text-muted-foreground">
-            guest@example.com
+            {userEmail || "guest@example.com"}
           </p>
         </div>
       </DropdownMenuLabel>
@@ -41,12 +44,13 @@ const UserAuthButtons = () => (
         <Link href="/login">Login</Link>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <DropdownMenuItem disabled>
-        Log out (disabled)
+       <DropdownMenuItem asChild>
+        <Link href="/login">Log out</Link>
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
-);
+  );
+};
 
 
 export default function Header() {
@@ -59,7 +63,6 @@ export default function Header() {
         </Link>
         
         <nav className="hidden md:flex items-center space-x-2">
-          {/* NavLinks removed */}
           <UserAuthButtons />
         </nav>
 
@@ -77,7 +80,6 @@ export default function Header() {
                   <LogoIcon className="h-8 w-8 text-primary" />
                   <span className="font-headline text-xl font-semibold tracking-tight">Client Portal</span>
                 </Link>
-                {/* NavLinks removed from mobile */}
                 <div className="pt-4 border-t">
                   <UserAuthButtons />
                 </div>

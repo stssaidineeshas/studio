@@ -43,12 +43,8 @@ export default function LoginForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
+    // Hardcoded credentials for demo purposes
     if (values.email === "martinmiller@gmail.com" && values.password === "password") { 
-      // Successful login toast is not standard, redirecting directly
-      // toast({
-      //   title: "Login Successful",
-      //   description: "Redirecting to dashboard...",
-      // });
       router.push("/dashboard");
     } else {
       toast({
