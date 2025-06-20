@@ -33,7 +33,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LogoIcon from '@/components/icons/LogoIcon';
 import { LayoutDashboard, BarChart3, Settings, ListChecks, LibraryBig, CircleSlash, ChevronRight, RefreshCcw, CheckCircle2 } from 'lucide-react';
 import W9Form from '@/components/dashboard/W9Form';
-import { Sheet, SheetTrigger } from '@/components/ui/sheet';
+import W9ViewModal from '@/components/dashboard/W9ViewModal';
 
 interface Activity {
   id: string;
@@ -71,6 +71,7 @@ export default function DashboardPage() {
   const [taxYears, setTaxYears] = useState<string[]>([]);
   const [isW9SheetOpen, setIsW9SheetOpen] = useState(false);
   const [w9Status, setW9Status] = useState<"pending" | "completed">("pending");
+  const [isW9ViewModalOpen, setIsW9ViewModalOpen] = useState(false);
 
   useEffect(() => {
     const year = new Date().getFullYear();
@@ -86,7 +87,6 @@ export default function DashboardPage() {
   const handleSaveW9 = () => {
     setW9Status("completed");
     setIsW9SheetOpen(false);
-    // Potentially show a success toast here
   };
 
   const userName = "Martin";
@@ -295,7 +295,7 @@ export default function DashboardPage() {
                   ) : (
                     <div className="flex items-center text-green-600">
                        <CheckCircle2 size={16} className="mr-1" /> Completed
-                       <Button variant="link" className="p-0 h-auto text-primary hover:text-primary/80 ml-auto">
+                       <Button variant="link" className="p-0 h-auto text-primary hover:text-primary/80 ml-auto" onClick={() => setIsW9ViewModalOpen(true)}>
                          View W-9 <ChevronRight size={16} />
                        </Button>
                     </div>
@@ -322,8 +322,12 @@ export default function DashboardPage() {
           onSave={handleSaveW9}
         />
       )}
+      {isW9ViewModalOpen && (
+        <W9ViewModal
+          isOpen={isW9ViewModalOpen}
+          onClose={() => setIsW9ViewModalOpen(false)}
+        />
+      )}
     </div>
   );
 }
-
-    
