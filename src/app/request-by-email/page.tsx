@@ -28,7 +28,8 @@ import {
 import LogoIcon from "@/components/icons/LogoIcon";
 import { Bell, Search, PlusCircle, Eye, SendHorizonal, Circle } from "lucide-react";
 import AddVendorSheet from '@/components/request-by-email/AddVendorSheet';
-import ViewVendorSheet from '@/components/request-by-email/ViewVendorSheet'; // New import
+import ViewVendorSheet from '@/components/request-by-email/ViewVendorSheet';
+import { useToast } from '@/hooks/use-toast';
 
 interface Vendor {
   id: string;
@@ -39,19 +40,20 @@ interface Vendor {
   activities: number;
   payouts: string;
   withheld: string;
-  w9Status: 'Completed' | 'Requested W-9';
-  tinStatus: 'In Progress' | 'Success' | 'Order Created';
+  w9Status: 'Completed' | 'Requested W-9' | 'Not Requested';
+  tinStatus: 'In Progress' | 'Success' | 'Order Created' | 'Not Requested';
 }
 
 const initialVendorsData: Vendor[] = [
   { id: '1', name: 'Tristian Stubbs', vendorId: '#73489', email: 'tristianstubbs@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Completed', tinStatus: 'In Progress' },
   { id: '2', name: 'Steve Martin', vendorId: '#84659', email: 'steve@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Completed', tinStatus: 'Success' },
-  { id: '3', name: 'Martin Shane', vendorId: '#73489', email: 'martinshane@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Completed', tinStatus: 'In Progress' },
-  { id: '4', name: 'Clara Marshall', vendorId: '#45879', email: 'claramarsh@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Requested W-9', tinStatus: 'Order Created' },
+  { id: '3', name: 'Martin Shane', vendorId: '#73489', email: 'martinshane@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Requested W-9', tinStatus: 'Order Created' },
+  { id: '4', name: 'Clara Marshall', vendorId: '#45879', email: 'claramarsh@gmail.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Not Requested', tinStatus: 'Not Requested' },
+  { id: '5', name: 'John Doe', vendorId: '#12345', email: 'johndoe@example.com', ein: '12-345XXXX', activities: 100, payouts: '$1,000.00', withheld: '$100.00', w9Status: 'Not Requested', tinStatus: 'Not Requested' },
 ];
 
 const getStatusIndicator = (status: Vendor["w9Status"] | Vendor["tinStatus"]) => {
-  let colorClass = "";
+  let colorClass = "text-gray-400"; // Default for Not Requested
   switch (status) {
     case "Completed":
     case "Success":
@@ -64,6 +66,9 @@ const getStatusIndicator = (status: Vendor["w9Status"] | Vendor["tinStatus"]) =>
     case "Order Created":
       colorClass = "text-blue-500";
       break;
+    case "Not Requested":
+      // colorClass remains text-gray-400
+      break;
     default:
       colorClass = "text-gray-500";
   }
@@ -73,6 +78,7 @@ const getStatusIndicator = (status: Vendor["w9Status"] | Vendor["tinStatus"]) =>
 
 export default function RequestByEmailPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const userName = "Martin"; 
   const [isAddVendorSheetOpen, setIsAddVendorSheetOpen] = useState(false);
   const [vendorsData, setVendorsData] = useState<Vendor[]>(initialVendorsData);
@@ -86,20 +92,21 @@ export default function RequestByEmailPage() {
     router.push('/login');
   };
 
-  const handleSaveVendor = (newVendor: Omit<Vendor, 'id' | 'w9Status' | 'tinStatus'>) => {
+  const handleSaveVendor = (newVendorData: Omit<Vendor, 'id' | 'w9Status' | 'tinStatus'>) => {
     const newVendorEntry: Vendor = {
-      ...newVendor,
-      id: (vendorsData.length + 1).toString(), // Simple ID generation
-      w9Status: 'Requested W-9', // Default status
-      tinStatus: 'Order Created',  // Default status
+      ...newVendorData,
+      id: (vendorsData.length + 1).toString(),
+      w9Status: 'Not Requested', 
+      tinStatus: 'Not Requested',  
     };
     setVendorsData(prevVendors => [newVendorEntry, ...prevVendors]);
     setIsAddVendorSheetOpen(false);
+    toast({ title: "Vendor Added", description: `${newVendorEntry.name} has been added.` });
   };
 
   const handleSelectAll = (checked: boolean | string) => {
     if (checked) {
-      setSelectedVendorIds(vendorsData.map(vendor => vendor.id));
+      setSelectedVendorIds(filteredVendors.map(vendor => vendor.id));
     } else {
       setSelectedVendorIds([]);
     }
@@ -118,14 +125,64 @@ export default function RequestByEmailPage() {
     setIsViewVendorSheetOpen(true);
   };
 
+  const handleSendRequestEmail = (vendorId: string) => {
+    setVendorsData(prevVendors =>
+      prevVendors.map(vendor =>
+        vendor.id === vendorId && vendor.w9Status === 'Not Requested'
+          ? { ...vendor, w9Status: 'Requested W-9', tinStatus: 'Order Created' }
+          : vendor
+      )
+    );
+    const vendor = vendorsData.find(v => v.id === vendorId);
+    if (vendor) {
+      console.log(`Simulating: W-9 request email sent to ${vendor.email}`);
+      toast({
+        title: "Email Sent",
+        description: `W-9 request email has been sent to ${vendor.name}.`,
+      });
+    }
+  };
+
+  const handleSendBulkRequestEmails = () => {
+    let emailsSentCount = 0;
+    setVendorsData(prevVendors =>
+      prevVendors.map(vendor => {
+        if (selectedVendorIds.includes(vendor.id) && vendor.w9Status === 'Not Requested') {
+          console.log(`Simulating: W-9 request email sent to ${vendor.email} (bulk)`);
+          emailsSentCount++;
+          return { ...vendor, w9Status: 'Requested W-9', tinStatus: 'Order Created' };
+        }
+        return vendor;
+      })
+    );
+    if (emailsSentCount > 0) {
+      toast({
+        title: "Bulk Emails Sent",
+        description: `${emailsSentCount} W-9 request email(s) have been sent.`,
+      });
+    } else {
+       toast({
+        title: "No Emails Sent",
+        description: "No selected vendors were eligible for a new W-9 request.",
+        variant: "destructive"
+      });
+    }
+    setSelectedVendorIds([]);
+  };
+
   const filteredVendors = vendorsData.filter(vendor =>
     vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     vendor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     vendor.vendorId.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const isAllSelected = vendorsData.length > 0 && selectedVendorIds.length === vendorsData.length;
-
+  const isAllSelected = filteredVendors.length > 0 && selectedVendorIds.length === filteredVendors.length;
+  
+  const canSendBulkEmail = selectedVendorIds.length > 0 && 
+                           selectedVendorIds.some(id => {
+                             const vendor = vendorsData.find(v => v.id === id);
+                             return vendor && vendor.w9Status === 'Not Requested';
+                           });
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -187,10 +244,20 @@ export default function RequestByEmailPage() {
               onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button className="w-full md:w-auto" onClick={() => setIsAddVendorSheetOpen(true)}>
-            <PlusCircle className="mr-2 h-5 w-5" />
-            Add Vendor
-          </Button>
+          <div className="flex gap-2 w-full md:w-auto">
+            <Button className="flex-grow md:flex-grow-0" onClick={() => setIsAddVendorSheetOpen(true)}>
+              <PlusCircle className="mr-2 h-5 w-5" />
+              Add Vendor
+            </Button>
+            <Button 
+              className="flex-grow md:flex-grow-0"
+              onClick={handleSendBulkRequestEmails}
+              disabled={!canSendBulkEmail}
+            >
+              <SendHorizonal className="mr-2 h-5 w-5" />
+              Send W-9 Requests
+            </Button>
+          </div>
         </div>
 
         <Card className="shadow-sm">
@@ -247,21 +314,27 @@ export default function RequestByEmailPage() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {getStatusIndicator(vendor.w9Status)}
-                        {vendor.w9Status}
+                        {vendor.w9Status === 'Not Requested' ? '-' : vendor.w9Status}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {getStatusIndicator(vendor.tinStatus)}
-                        {vendor.tinStatus}
+                        {vendor.tinStatus === 'Not Requested' ? '-' : vendor.tinStatus}
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
                       <Button variant="ghost" size="icon" className="mr-1" onClick={() => handleViewVendor(vendor)}>
                         <Eye className="h-5 w-5 text-primary" />
                       </Button>
-                       <Button variant="ghost" size="icon" disabled>
-                        <SendHorizonal className="h-5 w-5 text-primary/50" />
+                       <Button 
+                         variant="ghost" 
+                         size="icon" 
+                         disabled={vendor.w9Status !== 'Not Requested'}
+                         onClick={() => handleSendRequestEmail(vendor.id)}
+                         title={vendor.w9Status === 'Not Requested' ? "Send W-9 Request Email" : "W-9 Request Already Sent/Completed"}
+                        >
+                        <SendHorizonal className={`h-5 w-5 ${vendor.w9Status === 'Not Requested' ? 'text-primary' : 'text-primary/50'}`} />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -294,3 +367,6 @@ export default function RequestByEmailPage() {
     </div>
   );
 }
+
+
+    

@@ -11,9 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetFooter,
-  // SheetClose, // No longer needed here for the header X button
 } from "@/components/ui/sheet";
-// import { X, Circle } from "lucide-react"; // X No longer needed if default X is used
 import { Circle } from "lucide-react";
 
 
@@ -26,8 +24,8 @@ interface Vendor {
   activities: number;
   payouts: string;
   withheld: string;
-  w9Status: 'Completed' | 'Requested W-9';
-  tinStatus: 'In Progress' | 'Success' | 'Order Created';
+  w9Status: 'Completed' | 'Requested W-9' | 'Not Requested';
+  tinStatus: 'In Progress' | 'Success' | 'Order Created' | 'Not Requested';
 }
 
 interface ViewVendorSheetProps {
@@ -36,9 +34,9 @@ interface ViewVendorSheetProps {
   vendor: Vendor | null;
 }
 
-const getStatusIndicator = (status: Vendor["w9Status"] | Vendor["tinStatus"] | undefined) => {
+const getStatusIndicatorVisual = (status: Vendor["w9Status"] | Vendor["tinStatus"] | undefined) => {
   if (!status) return null;
-  let colorClass = "";
+  let colorClass = "text-gray-400";
   switch (status) {
     case "Completed":
     case "Success":
@@ -51,6 +49,9 @@ const getStatusIndicator = (status: Vendor["w9Status"] | Vendor["tinStatus"] | u
     case "Order Created":
       colorClass = "text-blue-500";
       break;
+    case "Not Requested":
+      // colorClass remains text-gray-400
+      break;
     default:
       colorClass = "text-gray-500";
   }
@@ -62,8 +63,8 @@ const DetailItem = ({ label, value, isStatus = false, statusValue }: { label: st
     <Label className="text-sm text-muted-foreground">{label}</Label>
     {isStatus ? (
       <div className="text-sm text-foreground mt-1 flex items-center">
-        {getStatusIndicator(statusValue)}
-        {value}
+        {getStatusIndicatorVisual(statusValue)}
+        {value === 'Not Requested' ? '-' : value}
       </div>
     ) : (
       <p className="text-sm text-foreground mt-1">{value}</p>
@@ -83,7 +84,6 @@ export default function ViewVendorSheet({ isOpen, onClose, vendor }: ViewVendorS
         <SheetHeader className="p-4 border-b" style={{ backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))' }}>
           <div className="flex justify-between items-center">
             <SheetTitle>Vendor Details</SheetTitle>
-            {/* The default SheetContent close button will appear here */}
           </div>
         </SheetHeader>
 
@@ -117,3 +117,5 @@ export default function ViewVendorSheet({ isOpen, onClose, vendor }: ViewVendorS
     </Sheet>
   );
 }
+
+    
