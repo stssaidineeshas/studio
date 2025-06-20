@@ -1,7 +1,7 @@
 
 "use client";
 
-import Link from 'next/link'; // Moved to top
+import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetFooter,
-  SheetClose,
+  SheetClose, 
 } from "@/components/ui/sheet";
 import { Info, X } from "lucide-react";
 
@@ -35,7 +35,6 @@ interface W9FormProps {
 export default function W9Form({ isOpen, onClose, onSave }: W9FormProps) {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Add form validation logic here if needed
     onSave();
   };
 
@@ -45,11 +44,7 @@ export default function W9Form({ isOpen, onClose, onSave }: W9FormProps) {
         <SheetHeader className="bg-primary-foreground border-b p-4" style={{backgroundColor: '#003366'}}>
           <div className="flex justify-between items-center">
             <SheetTitle className="text-white">Fill Form W-9</SheetTitle>
-            <SheetClose asChild>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
-                <X className="h-5 w-5" />
-              </Button>
-            </SheetClose>
+            {/* Removed manual SheetClose here as SheetContent provides one */}
           </div>
         </SheetHeader>
 
@@ -184,7 +179,6 @@ export default function W9Form({ isOpen, onClose, onSave }: W9FormProps) {
                         <SelectContent>
                         <SelectItem value="1">1</SelectItem>
                         <SelectItem value="2">2</SelectItem>
-                        {/* Add other exempt codes as needed */}
                         </SelectContent>
                     </Select>
                 </div>
@@ -200,15 +194,10 @@ export default function W9Form({ isOpen, onClose, onSave }: W9FormProps) {
             Back
           </Button>
           <Button type="submit" onClick={() => {
-            // Simulate form submission for now. In a real app, you'd handle form data.
-            // To properly submit the form, this button should be inside the <form>
-            // or use the form attribute: <Button type="submit" form="w9FormId">
-            handleSubmit(new Event('submit', {cancelable: true}) as any); // Or call onSave directly if validation isn't form-dependent
+            handleSubmit(new Event('submit', {cancelable: true}) as any); 
           }}>Save</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
   );
 }
-
-    

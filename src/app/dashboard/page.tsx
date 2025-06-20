@@ -11,7 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator as DropdownMenuSeparatorComponent, // Renamed to avoid conflict
+  DropdownMenuSeparator as DropdownMenuSeparatorComponent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -97,7 +97,7 @@ export default function DashboardPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <header className="bg-card shadow-sm px-6 py-3">
         <div className="mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <LogoIcon className="h-9 w-9 text-primary" />
             <div>
               <span className="font-headline text-xl font-semibold text-primary">CLIENT</span>
@@ -295,20 +295,24 @@ export default function DashboardPage() {
                     <h4 className="text-sm font-medium text-muted-foreground">Address</h4>
                     <p className="text-foreground">123 Main street, CVG Road,<br/>CA 569384</p>
                   </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-muted-foreground">W-9 Status</h4>
-                    {w9Status === "pending" ? (
-                      <Button variant="link" className="p-0 h-auto text-orange-500 hover:text-orange-600 flex items-center" onClick={() => setIsW9SheetOpen(true)}>
-                        - <span className="ml-auto">Complete W-9 <ChevronRight size={16} /></span>
-                      </Button>
-                    ) : (
-                      <div className="flex items-center text-green-600">
-                         <CheckCircle2 size={16} className="mr-1" /> Completed
-                         <Button variant="link" className="p-0 h-auto text-primary hover:text-primary/80 ml-auto" onClick={() => setIsW9ViewModalOpen(true)}>
-                           View W-9 <ChevronRight size={16} />
-                         </Button>
-                      </div>
-                    )}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-medium text-muted-foreground">W-9 Status</h4>
+                      {w9Status === "pending" ? (
+                        <Button variant="link" className="p-0 h-auto text-orange-500 hover:text-orange-600 flex items-center text-sm" onClick={() => setIsW9SheetOpen(true)}>
+                          - Complete W-9 <ChevronRight size={16} className="ml-1" />
+                        </Button>
+                      ) : (
+                        <div className="flex items-center">
+                          <span className="flex items-center text-green-600 text-sm">
+                            <CheckCircle2 size={16} className="mr-1" /> Completed
+                          </span>
+                          <Button variant="link" className="p-0 h-auto text-primary hover:text-primary/80 ml-2 text-sm" onClick={() => setIsW9ViewModalOpen(true)}>
+                            View W-9 <ChevronRight size={16} className="ml-1" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                    <div>
                     <h4 className="text-sm font-medium text-muted-foreground">TIN Matching Status</h4>
@@ -341,6 +345,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-
-    
