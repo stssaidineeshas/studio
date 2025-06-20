@@ -47,7 +47,7 @@ interface Vendor {
 
 const initialVendorsData: Vendor[] = [
   { id: '1', name: 'Tristian Stubbs', vendorId: '#73489', email: 'tristianstubbs@example.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Completed', tinStatus: 'Success' },
-  { id: '2', name: 'Steve Martin', vendorId: '#84659', email: 'saidineesha.s@spantechnologyservices.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Not Requested', tinStatus: 'Not Requested' },
+  { id: '2', name: 'Dineesha', vendorId: '#84659', email: 'saidineesha.s@spantechnologyservices.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Not Requested', tinStatus: 'Not Requested' },
   { id: '3', name: 'Martin Shane', vendorId: '#73489', email: 'martinshane@example.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Requested W-9', tinStatus: 'Order Created' },
   { id: '4', name: 'Clara Marshall', vendorId: '#45879', email: 'claramarsh@example.com', ein: '89-456XXXX', activities: 699, payouts: '$11,000.00', withheld: '$3,500.00', w9Status: 'Not Requested', tinStatus: 'Not Requested' },
   { id: '5', name: 'John Doe', vendorId: '#12345', email: 'johndoe@example.com', ein: '12-345XXXX', activities: 100, payouts: '$1,000.00', withheld: '$100.00', w9Status: 'Not Requested', tinStatus: 'Not Requested' },
