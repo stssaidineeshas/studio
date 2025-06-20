@@ -11,7 +11,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
+  DropdownMenuSeparator as DropdownMenuSeparatorComponent, // Renamed to avoid conflict
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -34,6 +34,7 @@ import LogoIcon from '@/components/icons/LogoIcon';
 import { LayoutDashboard, BarChart3, Settings, ListChecks, LibraryBig, CircleSlash, ChevronRight, RefreshCcw, CheckCircle2 } from 'lucide-react';
 import W9Form from '@/components/dashboard/W9Form';
 import W9ViewModal from '@/components/dashboard/W9ViewModal';
+import { Separator } from "@/components/ui/separator";
 
 interface Activity {
   id: string;
@@ -93,50 +94,19 @@ export default function DashboardPage() {
   const userEmail = "martinmiller@gmail.com";
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <aside className="w-64 bg-card p-6 shadow-md flex flex-col">
-        <Link href="/dashboard" className="flex items-center gap-2 mb-10">
-          <LogoIcon className="h-9 w-9 text-primary" />
-          <div>
-            <span className="font-headline text-xl font-semibold text-primary">CLIENT</span>
-            <span className="font-headline text-xl font-medium text-primary/80"> Portal</span>
-          </div>
-        </Link>
-        <nav className="flex-grow">
-          <ul>
-            <li>
-              <Link href="/dashboard" className="flex items-center gap-3 p-3 rounded-md bg-primary text-primary-foreground font-medium">
-                <LayoutDashboard size={20} />
-                Dashboard
-              </Link>
-            </li>
-            <li className="mt-2">
-              <Link href="#" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted text-foreground/80">
-                <BarChart3 size={20} />
-                Reports
-              </Link>
-            </li>
-            <li className="mt-2">
-              <Link href="#" className="flex items-center gap-3 p-3 rounded-md hover:bg-muted text-foreground/80">
-                <Settings size={20} />
-                Settings
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </aside>
-
-      <main className="flex-1 p-6 md:p-10 space-y-6 bg-muted/30">
-        <header className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground mt-1">
-              The following vendors have successfully completed their W-9 submissions using both the Request By URL and Request By Email methods
-            </p>
-          </div>
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="bg-card shadow-sm px-6 py-3">
+        <div className="mx-auto flex items-center justify-between">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <LogoIcon className="h-9 w-9 text-primary" />
+            <div>
+              <span className="font-headline text-xl font-semibold text-primary">CLIENT</span>
+              <span className="font-headline text-xl font-medium text-primary/80"> Portal</span>
+            </div>
+          </Link>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="font-semibold text-foreground">Welcome {userName}!</p>
+              <p className="font-semibold text-foreground text-sm">Welcome {userName}!</p>
               <p className="text-xs text-muted-foreground">{userEmail}</p>
             </div>
             <DropdownMenu>
@@ -154,13 +124,53 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparatorComponent />
                 <DropdownMenuItem onClick={handleLogout}>
                   Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <div className="flex items-center gap-2">
+          </div>
+        </div>
+      </header>
+
+      <Separator className="my-0" />
+
+      <div className="flex flex-1">
+        <aside className="w-64 bg-muted p-6 flex flex-col">
+          <nav className="flex-grow">
+            <ul>
+              <li>
+                <Link href="/dashboard" className="flex items-center gap-3 p-3 rounded-md bg-primary text-primary-foreground font-medium">
+                  <LayoutDashboard size={20} />
+                  Dashboard
+                </Link>
+              </li>
+              <li className="mt-2">
+                <Link href="#" className="flex items-center gap-3 p-3 rounded-md hover:bg-primary/10 text-foreground/80">
+                  <BarChart3 size={20} />
+                  Reports
+                </Link>
+              </li>
+              <li className="mt-2">
+                <Link href="#" className="flex items-center gap-3 p-3 rounded-md hover:bg-primary/10 text-foreground/80">
+                  <Settings size={20} />
+                  Settings
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        </aside>
+
+        <main className="flex-1 p-6 md:p-10 space-y-6 bg-card">
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
+              <p className="text-muted-foreground mt-1 max-w-2xl">
+                The following vendors have successfully completed their W-9 submissions using both the Request By URL and Request By Email methods
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0 mt-1">
               <span className="text-sm text-foreground/80">Tax Year</span>
               <Select value={currentYear} onValueChange={setCurrentYear}>
                 <SelectTrigger className="w-[100px] h-9">
@@ -174,146 +184,146 @@ export default function DashboardPage() {
               </Select>
             </div>
           </div>
-        </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Activities</CardTitle>
-              <ListChecks className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">310</div>
-            </CardContent>
-          </Card>
-          <Card className="shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Payouts</CardTitle>
-              <LibraryBig className="h-5 w-5 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">$13,000.00</div>
-            </CardContent>
-          </Card>
-          <Card className="shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Withhold</CardTitle>
-              <CircleSlash className="h-5 w-5 text-orange-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">$4,000.91</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="lg:flex-grow">
-            <Tabs defaultValue="activities" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 md:w-[200px]">
-                <TabsTrigger value="activities">Activities</TabsTrigger>
-                <TabsTrigger value="payouts">Payouts</TabsTrigger>
-              </TabsList>
-              <TabsContent value="activities">
-                <Card className="shadow-sm">
-                  <CardContent className="p-0">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="bg-muted/50">Date</TableHead>
-                          <TableHead className="bg-muted/50">Description</TableHead>
-                          <TableHead className="bg-muted/50">Activity Reference</TableHead>
-                          <TableHead className="text-right bg-muted/50">Amount</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {activitiesData.map((activity) => (
-                          <TableRow key={activity.id}>
-                            <TableCell>{activity.date}</TableCell>
-                            <TableCell>{activity.description}</TableCell>
-                            <TableCell>{activity.activityReference}</TableCell>
-                            <TableCell className="text-right">{activity.amount}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="payouts">
-                <Card className="shadow-sm">
-                   <CardContent className="p-0">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="bg-muted/50">Date</TableHead>
-                          <TableHead className="bg-muted/50">Payroll Reference</TableHead>
-                          <TableHead className="text-right bg-muted/50">Payout</TableHead>
-                          <TableHead className="text-right bg-muted/50">Withhold</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {payoutsData.map((payout) => (
-                          <TableRow key={payout.id}>
-                            <TableCell>{payout.date}</TableCell>
-                            <TableCell>{payout.payrollReference}</TableCell>
-                            <TableCell className="text-right">{payout.payout}</TableCell>
-                            <TableCell className="text-right">{payout.withhold}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
-
-          <div className="lg:w-96 flex-shrink-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="shadow-sm">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg">Vendor Details</CardTitle>
-                <Button variant="link" size="sm" className="p-0 h-auto text-primary hover:text-primary/80">
-                  <RefreshCcw size={16} className="mr-1" />
-                  Refresh
-                </Button>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Total Activities</CardTitle>
+                <ListChecks className="h-5 w-5 text-primary" />
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground">Name</h4>
-                  <p className="text-foreground">Martin Miller</p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground">Address</h4>
-                  <p className="text-foreground">123 Main street, CVG Road,<br/>CA 569384</p>
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground">W-9 Status</h4>
-                  {w9Status === "pending" ? (
-                    <Button variant="link" className="p-0 h-auto text-orange-500 hover:text-orange-600 flex items-center" onClick={() => setIsW9SheetOpen(true)}>
-                      - <span className="ml-auto">Complete W-9 <ChevronRight size={16} /></span>
-                    </Button>
-                  ) : (
-                    <div className="flex items-center text-green-600">
-                       <CheckCircle2 size={16} className="mr-1" /> Completed
-                       <Button variant="link" className="p-0 h-auto text-primary hover:text-primary/80 ml-auto" onClick={() => setIsW9ViewModalOpen(true)}>
-                         View W-9 <ChevronRight size={16} />
-                       </Button>
-                    </div>
-                  )}
-                </div>
-                 <div>
-                  <h4 className="text-sm font-medium text-muted-foreground">TIN Matching Status</h4>
-                   <p className="text-foreground">-</p>
-                </div>
+              <CardContent>
+                <div className="text-2xl font-bold text-foreground">310</div>
+              </CardContent>
+            </Card>
+            <Card className="shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Total Payouts</CardTitle>
+                <LibraryBig className="h-5 w-5 text-green-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-foreground">$13,000.00</div>
+              </CardContent>
+            </Card>
+            <Card className="shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Total Withhold</CardTitle>
+                <CircleSlash className="h-5 w-5 text-orange-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-foreground">$4,000.91</div>
               </CardContent>
             </Card>
           </div>
-        </div>
-        
-        <footer className="text-center text-sm text-muted-foreground pt-8">
-          This is a sample Vendor portal developed by TaxBandits.
-        </footer>
-      </main>
+
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="lg:flex-grow">
+              <Tabs defaultValue="activities" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 md:w-[200px]">
+                  <TabsTrigger value="activities">Activities</TabsTrigger>
+                  <TabsTrigger value="payouts">Payouts</TabsTrigger>
+                </TabsList>
+                <TabsContent value="activities">
+                  <Card className="shadow-sm">
+                    <CardContent className="p-0">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="bg-muted/50">Date</TableHead>
+                            <TableHead className="bg-muted/50">Description</TableHead>
+                            <TableHead className="bg-muted/50">Activity Reference</TableHead>
+                            <TableHead className="text-right bg-muted/50">Amount</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {activitiesData.map((activity) => (
+                            <TableRow key={activity.id}>
+                              <TableCell>{activity.date}</TableCell>
+                              <TableCell>{activity.description}</TableCell>
+                              <TableCell>{activity.activityReference}</TableCell>
+                              <TableCell className="text-right">{activity.amount}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                <TabsContent value="payouts">
+                  <Card className="shadow-sm">
+                     <CardContent className="p-0">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="bg-muted/50">Date</TableHead>
+                            <TableHead className="bg-muted/50">Payroll Reference</TableHead>
+                            <TableHead className="text-right bg-muted/50">Payout</TableHead>
+                            <TableHead className="text-right bg-muted/50">Withhold</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {payoutsData.map((payout) => (
+                            <TableRow key={payout.id}>
+                              <TableCell>{payout.date}</TableCell>
+                              <TableCell>{payout.payrollReference}</TableCell>
+                              <TableCell className="text-right">{payout.payout}</TableCell>
+                              <TableCell className="text-right">{payout.withhold}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </div>
+
+            <div className="lg:w-96 flex-shrink-0">
+              <Card className="shadow-sm">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-lg">Vendor Details</CardTitle>
+                  <Button variant="link" size="sm" className="p-0 h-auto text-primary hover:text-primary/80">
+                    <RefreshCcw size={16} className="mr-1" />
+                    Refresh
+                  </Button>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">Name</h4>
+                    <p className="text-foreground">Martin Miller</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">Address</h4>
+                    <p className="text-foreground">123 Main street, CVG Road,<br/>CA 569384</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">W-9 Status</h4>
+                    {w9Status === "pending" ? (
+                      <Button variant="link" className="p-0 h-auto text-orange-500 hover:text-orange-600 flex items-center" onClick={() => setIsW9SheetOpen(true)}>
+                        - <span className="ml-auto">Complete W-9 <ChevronRight size={16} /></span>
+                      </Button>
+                    ) : (
+                      <div className="flex items-center text-green-600">
+                         <CheckCircle2 size={16} className="mr-1" /> Completed
+                         <Button variant="link" className="p-0 h-auto text-primary hover:text-primary/80 ml-auto" onClick={() => setIsW9ViewModalOpen(true)}>
+                           View W-9 <ChevronRight size={16} />
+                         </Button>
+                      </div>
+                    )}
+                  </div>
+                   <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">TIN Matching Status</h4>
+                     <p className="text-foreground">-</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+          
+          <footer className="text-center text-sm text-muted-foreground pt-8">
+            This is a sample Vendor portal developed by TaxBandits.
+          </footer>
+        </main>
+      </div>
       
       {isW9SheetOpen && (
         <W9Form
@@ -331,3 +341,6 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+
+    
