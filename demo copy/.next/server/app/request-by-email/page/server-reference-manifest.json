@@ -1,0 +1,16 @@
+{
+  "node": {
+    "40abcc30fa9470bdf6c8beaa3ba50d30584eb5294d": {
+      "workers": {
+        "app/request-by-email/page": {
+          "moduleId": "[project]/.next-internal/server/app/request-by-email/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/actions/emailActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/request-by-email/page": "action-browser"
+      }
+    }
+  },
+  "edge": {}
+}

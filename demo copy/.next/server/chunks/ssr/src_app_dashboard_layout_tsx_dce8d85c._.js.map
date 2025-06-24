@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///home/user/studio/src/app/dashboard/layout.tsx"],"sourcesContent":["\nimport type { Metadata } from 'next';\n\nexport const metadata: Metadata = {\n  title: 'Client Portal Dashboard',\n  description: 'Manage your activities, payouts, and settings.',\n};\n\nexport default function DashboardLayout({\n  children,\n}: Readonly<{\n  children: React.ReactNode;\n}>) {\n  return (\n    <div className=\"min-h-screen bg-background\">\n      {children}\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;;;AAGO,MAAM,WAAqB;IAChC,OAAO;IACP,aAAa;AACf;AAEe,SAAS,gBAAgB,EACtC,QAAQ,EAGR;IACA,qBACE,8OAAC;QAAI,WAAU;kBACZ;;;;;;AAGP","debugId":null}}]
+}
